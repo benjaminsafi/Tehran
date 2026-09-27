@@ -126,6 +126,16 @@
   .hero h1 em{
     font-style:normal; color:var(--neon);
   }
+  .type-cursor{
+    display:inline-block; width:3px; height:0.9em;
+    background:var(--neon); margin-inline-start:4px;
+    vertical-align:-0.1em;
+    animation: blink 0.9s step-start infinite;
+  }
+  @keyframes blink{ 50%{ opacity:0; } }
+  @media (prefers-reduced-motion: reduce){
+    .type-cursor{ animation:none; }
+  }
   .hero p{
     color:var(--muted);
     font-size:1rem;
@@ -250,7 +260,7 @@
   <div class="wrap hero">
     <div class="hero-frame">
       <div class="drop-badge">کلکسیون <b>۰۱</b> — شهر نئون</div>
-      <h1>به <em>میران‌شاپ</em><br>خوش اومدی</h1>
+      <h1>به <em id="brandType"></em><span class="type-cursor"></span><br>خوش اومدی</h1>
       <p>لباس‌هایی برای اونایی که سلیقه‌شون خاصه؛ ارسال به سراسر ایران.</p>
       <div class="cta-row">
         <button class="btn-primary" onclick="document.getElementById('order').scrollIntoView()">سفارش بده</button>
@@ -310,6 +320,26 @@
     </div>
   </div>
 </footer>
+
+<script>
+  (function(){
+    var el = document.getElementById('brandType');
+    var text = 'میران‌شاپ';
+    var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if(!el) return;
+    if(reduced){ el.textContent = text; return; }
+    var i = 0;
+    el.textContent = '';
+    function step(){
+      if(i < text.length){
+        el.textContent += text.charAt(i);
+        i++;
+        setTimeout(step, 130);
+      }
+    }
+    step();
+  })();
+</script>
 
 </body>
 </html>
