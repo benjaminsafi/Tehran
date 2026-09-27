@@ -200,7 +200,7 @@
   .step h3{margin:0 0 4px; font-size:1rem; font-weight:700;}
   .step p{margin:0; color:var(--muted); font-size:0.92rem;}
 
-  /* Contact */
+  /* Contact (legacy, kept for compatibility) */
   .contact-block{ margin-top:8px; }
   .contact-line{
     display:flex; justify-content:space-between; align-items:center;
@@ -211,6 +211,46 @@
   .contact-line span:first-child{color:var(--muted);}
   .contact-line span:last-child{font-weight:500;}
   .order-cta{ margin-top:28px; text-align:center; }
+
+  /* Order form */
+  .order-form{
+    text-align:right; margin-top:12px;
+    display:flex; flex-direction:column; gap:22px;
+  }
+  .field{ display:flex; flex-direction:column; gap:7px; }
+  .field label{ font-size:0.8rem; color:var(--muted); letter-spacing:0.02em; }
+  .field input, .field select, .field textarea{
+    background:transparent; border:none; border-bottom:1px solid var(--line);
+    color:var(--ink); font-family:inherit; font-size:0.95rem; padding:8px 2px;
+    outline:none; transition:border-color .2s; width:100%;
+  }
+  .field select{ background-color:transparent; }
+  .field select option{ background-color:#0a3019; color:var(--ink); }
+  .field input:focus, .field select:focus, .field textarea:focus{ border-color:var(--neon); }
+  .field textarea{ resize:vertical; line-height:1.6; }
+  .field-row{ display:flex; gap:18px; }
+  .field-row .field{ flex:1; }
+  .pay-options{ display:flex; gap:22px; flex-wrap:wrap; margin-top:2px; }
+  .pay-opt{ display:flex; align-items:center; gap:7px; font-size:0.9rem; color:var(--ink); cursor:pointer; }
+  .pay-opt input{ width:auto; accent-color:var(--neon); }
+  .card-info{
+    border:1px solid var(--line-soft); padding:16px 18px; border-radius:2px;
+    font-size:0.86rem; color:var(--muted);
+  }
+  .card-number{
+    display:flex; align-items:center; gap:12px; justify-content:flex-end;
+    font-weight:700; color:var(--ink); font-size:1rem; margin:10px 0;
+    direction:ltr;
+  }
+  .copy-btn{
+    background:transparent; border:1px solid var(--line); color:var(--muted);
+    font-size:0.72rem; padding:5px 12px; border-radius:2px; cursor:pointer;
+    font-family:inherit; transition:border-color .2s, color .2s;
+  }
+  .copy-btn:hover{ border-color:var(--neon); color:var(--neon); }
+  .muted-small{ font-size:0.8rem; color:var(--muted); margin-top:6px; }
+  .order-success{ text-align:center; padding:36px 0; }
+  .order-success p:first-child{ font-size:1.25rem; font-weight:700; color:var(--neon); margin-bottom:8px; }
 
   /* Footer */
   footer{
@@ -290,7 +330,7 @@
         </div>
         <div class="step">
           <div class="num">۰۲</div>
-          <div><h3>پیام بده</h3><p>از طریق تلگرام، مدل و آدرست رو برامون بفرست.</p></div>
+          <div><h3>آدرس و پرداخت</h3><p>فرم زیر رو با آدرست پر کن و روش پرداخت رو انتخاب کن.</p></div>
         </div>
         <div class="step">
           <div class="num">۰۳</div>
@@ -298,12 +338,66 @@
         </div>
       </div>
 
-      <div class="contact-block">
-        <div class="contact-line"><span>تلگرام</span><span>t.me/miranshop (نمونه)</span></div>
-        <div class="contact-line"><span>تماس</span><span>۰۹۱۲‑۰۰۰‑۰۰۰۰ (نمونه)</span></div>
-      </div>
-      <div class="order-cta">
-        <button class="btn-primary" onclick="alert('این فقط یک نمونه‌ی طراحی است — برای فعال کردن سفارش واقعی، لینک تلگرام/واتس‌اپ را وصل کن.')">شروع سفارش</button>
+      <form id="orderForm" class="order-form" onsubmit="return handleOrder(event)">
+        <div class="field">
+          <label>نام و نام خانوادگی</label>
+          <input type="text" name="name" required>
+        </div>
+        <div class="field">
+          <label>شماره موبایل</label>
+          <input type="tel" name="phone" required inputmode="numeric" placeholder="۰۹۱۲۰۰۰۰۰۰۰">
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label>مدل</label>
+            <select name="model" required>
+              <option value="">انتخاب کن</option>
+              <option>کاپشن</option>
+              <option>هودی</option>
+              <option>شلوار</option>
+              <option>اکسسوری</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>سایز</label>
+            <select name="size" required>
+              <option value="">--</option>
+              <option>S</option>
+              <option>M</option>
+              <option>L</option>
+              <option>XL</option>
+            </select>
+          </div>
+        </div>
+        <div class="field">
+          <label>آدرس کامل پستی</label>
+          <textarea name="address" rows="3" required placeholder="استان، شهر، خیابان، پلاک، واحد"></textarea>
+        </div>
+        <div class="field">
+          <label>کد پستی (اختیاری)</label>
+          <input type="text" name="postal" inputmode="numeric">
+        </div>
+
+        <div class="field">
+          <label>روش پرداخت</label>
+          <div class="pay-options">
+            <label class="pay-opt"><input type="radio" name="pay" value="cod" checked onchange="togglePay()"> پرداخت درب منزل</label>
+            <label class="pay-opt"><input type="radio" name="pay" value="card" onchange="togglePay()"> کارت به کارت</label>
+          </div>
+        </div>
+
+        <div id="cardInfo" class="card-info" style="display:none">
+          <p>مبلغ رو به این شماره کارت واریز کن و رسیدشو نگه‌دار:</p>
+          <div class="card-number">۶۰۳۷-XXXX-XXXX-XXXX <button type="button" class="copy-btn" onclick="copyCard()">کپی</button></div>
+          <p class="muted-small">به نام: میران‌شاپ (نمونه — با شماره کارت واقعی جایگزین کن)</p>
+        </div>
+
+        <button type="submit" class="btn-primary" style="width:100%">ثبت سفارش</button>
+      </form>
+
+      <div id="orderSuccess" class="order-success" style="display:none">
+        <p>✓ سفارشت ثبت شد</p>
+        <p class="muted-small">به‌زودی برای هماهنگی ارسال باهات تماس می‌گیریم.</p>
       </div>
     </div>
   </section>
@@ -320,6 +414,26 @@
     </div>
   </div>
 </footer>
+
+<script>
+  function togglePay(){
+    var isCard = document.querySelector('input[name="pay"][value="card"]').checked;
+    document.getElementById('cardInfo').style.display = isCard ? 'block' : 'none';
+  }
+  function copyCard(){
+    var num = '6037XXXXXXXXXXXX';
+    if(navigator.clipboard){
+      navigator.clipboard.writeText(num).then(function(){ alert('شماره کارت کپی شد'); });
+    }
+  }
+  function handleOrder(e){
+    e.preventDefault();
+    document.getElementById('orderForm').style.display = 'none';
+    document.getElementById('orderSuccess').style.display = 'block';
+    document.getElementById('orderSuccess').scrollIntoView({behavior:'smooth', block:'center'});
+    return false;
+  }
+</script>
 
 <script>
   (function(){
